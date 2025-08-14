@@ -1,0 +1,24 @@
+#######################################
+# Syntax Coloring Map For Sensirion
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+SHT3x	KEYWORD1
+SHT4x	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+autoRead1Sec	KEYWORD2
+startMeasure	KEYWORD2
+getTempHumid	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+SHT3x_ADDR	LITERAL1
+SHT4x_ADDR	LITERAL1
