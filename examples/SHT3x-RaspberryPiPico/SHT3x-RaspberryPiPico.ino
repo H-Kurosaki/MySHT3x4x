@@ -33,7 +33,7 @@ void setup() {
   
   Serial.println("I2C initialized: SDA=GP4, SCL=GP5");
   
-  // センサー初期化 (デフォルトアドレス 0x45)
+  // センサー初期化 (デフォルトアドレス 0x44)
   if (sensor.begin()) {
     Serial.println("SHT3x sensor initialized successfully!");
   } else {

@@ -14,7 +14,7 @@
 
 
 
-#define SHT3x_ADDR    0x45
+#define SHT3x_ADDR    0x44
 
 class SHT3x {
   public:

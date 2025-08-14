@@ -28,7 +28,7 @@ void setup() {
   // I2C初期化
   Wire.begin();
   
-  // センサー初期化 (デフォルトアドレス 0x45)
+  // センサー初期化 (デフォルトアドレス 0x44)
   if (sensor.begin()) {
     Serial.println("SHT3x sensor initialized successfully!");
   } else {
