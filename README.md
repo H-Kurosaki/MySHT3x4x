@@ -1,4 +1,6 @@
 # MySHT3x4x
+Arduino IDE用ライブラリ
+
 Sensirion SHT3x,Sensirion SHT4xセンサのライブラリを一つにまとめたものです。
 対応確認済みマイコンはArduino UNO R3とRaspberry Pi Picoですが、他のマイコンでも動くかもしれません。
 自動識別機能は実装していないので適切なセンサに合わせて手動で初期化してください。
