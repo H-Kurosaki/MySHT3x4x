@@ -1,5 +1,5 @@
 # MySHT3x4x
-Arduino IDE用ライブラリ
+Arduino IDE用 SHT3x,SHT4x温湿度センサ用ライブラリ
 
 Sensirion SHT3x,Sensirion SHT4xセンサのライブラリを一つにまとめたものです。
 対応確認済みマイコンはArduino UNO R3とRaspberry Pi Picoですが、他のマイコンでも動くかもしれません。
