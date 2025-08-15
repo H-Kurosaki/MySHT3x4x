@@ -20,7 +20,7 @@ class SHT3x {
   public:
     SHT3x();
     SHT3x(TwoWire &w);
-    bool autoRead1Sec(); 
+    bool autoRead(); 
     bool begin(unsigned char i2caddr = SHT3x_ADDR);
     bool startMeasure(void);
     bool getTempHumid(void);
@@ -32,7 +32,8 @@ class SHT3x {
     bool reset(void);
     unsigned char crc8Dallas(const unsigned char *data, int len);
     unsigned char _i2caddr;
-    
+	bool SensorSts;
+	bool measureFlag;
 };
 
 
@@ -45,7 +46,7 @@ public:
   SHT4x(TwoWire &w);
   
   // メイン関数（SHT3xと完全互換）
-  bool autoRead1Sec();  // 毎秒1回呼ぶ関数
+  bool autoRead();
   bool begin(unsigned char i2caddr = SHT4X_ADDR);
   bool startMeasure(void);
   bool getTempHumid(void);
@@ -66,11 +67,13 @@ private:
   unsigned char _i2caddr;
   unsigned char _precision;  // 0:高精度, 1:中精度, 2:低精度
   bool _initialized;
-  
+  bool SensorSts;
+  bool measureFlag;
+
+	
   // プライベートメソッド
   unsigned char crc8Dallas(const unsigned char *data, int len);
   unsigned char getPrecisionCommand();
-  unsigned char getPrecisionDelay();
 };
 
 #endif

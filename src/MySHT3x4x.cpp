@@ -9,16 +9,9 @@ SHT3x::SHT3x(TwoWire &w) {
   wire = &w;
 }
 
-
-//---------------------------------------------------------------毎秒１回呼ぶ関数
-bool SHT3x::autoRead1Sec()
+//----------------------推奨読み出し間隔16ms以上
+bool SHT3x::autoRead()
 {
-static bool SensorSts=false;
-static bool measureFlag=false;
-//------------------------------------------------------温湿度計測(2秒に一度)  
-//SHT3xは計測コマンドの後、データが準備されるのに時間がかかる
-//1秒間隔で計測コマンドと読み出しコマンドを交互に送信している
-
     if(!measureFlag)
       {
      //センサ計測開始
@@ -43,18 +36,19 @@ static bool measureFlag=false;
      //センサ読み出し失敗
      measureFlag=false;
      SensorSts=false;
-     humidity-999;
+     humidity=-999;
      temp=-999;
-     humiddiff-999;
-      if(!begin(SHT3x_ADDR))
-          {begin(0x44);}
+     humiddiff=-999;
+      begin(_i2caddr);
       if(retryCount<128){retryCount++;}
      }
   return SensorSts;
 }
 
 bool SHT3x::begin(unsigned char i2caddr) {
-  _i2caddr = i2caddr;
+	SensorSts=false;
+	measureFlag=false;
+	_i2caddr = i2caddr;
   return reset();
 }
 
@@ -147,9 +141,9 @@ SHT4x::SHT4x() {
   _precision = 0;       // 高精度
   retryCount = 0;
   _initialized = false;
-  temp = 0.0;
-  humidity = 0.0;
-  humiddiff = 0.0;
+  temp = -999;
+  humidity = -999;
+  humiddiff = -999;
 }
 
 // コンストラクタ（TwoWire指定）
@@ -158,15 +152,17 @@ SHT4x::SHT4x(TwoWire &w) {
   _precision = 0;
   retryCount = 0;
   _initialized = false;
-  temp = 0.0;
-  humidity = 0.0;
-  humiddiff = 0.0;
+  temp = -999;
+  humidity = -999;
+  humiddiff = -999;
 }
 
 // 初期化（SHT3xと同じインターフェース）
 bool SHT4x::begin(unsigned char i2caddr) {
   _i2caddr = i2caddr;
-  
+	SensorSts=false;
+	measureFlag=false;
+
   // Wireが設定されていない場合は標準Wireを使用（遅延初期化）
   if (wire == nullptr) {
     wire = &Wire;
@@ -187,17 +183,12 @@ bool SHT4x::begin(unsigned char i2caddr) {
   return true;
 }
 
-//---------------------------------------------------------------毎秒１回呼ぶ関数
-bool SHT4x::autoRead1Sec() {
-  static bool SensorSts = false;
-  static bool measureFlag = false;
+//---------------------------------------------------------------自動読み出し
+//推奨読み出し間隔10ms以上
+bool SHT4x::autoRead() {
   
   if (!_initialized) return false;
-  
-  // 温湿度計測(2秒に一度)  
-  // SHT4xは計測コマンドの後、データが準備されるのに時間がかかる
-  // 1秒間隔で計測コマンドと読み出しコマンドを交互に送信している
-  
+
   if (!measureFlag) {
     // センサ計測開始
     if (startMeasure()) {
@@ -208,7 +199,9 @@ bool SHT4x::autoRead1Sec() {
       humidity = -999;
       temp = -999;
       humiddiff = -999;
-      if (retryCount < 128) retryCount++;
+	  if (retryCount < 128){retryCount++;}
+	  // 再初期化試行
+      begin(_i2caddr);
       return false;
     }
   } else if (getTempHumid()) {
@@ -233,12 +226,8 @@ bool SHT4x::autoRead1Sec() {
     humiddiff = -999;
     
     // 再初期化試行
-    if (!begin(_i2caddr)) {
-      begin(0x44);
-    }
-    if (retryCount < 128) {
-      retryCount++;
-    }
+    begin(_i2caddr);
+    if (retryCount < 128) {retryCount++;}
   }
   
   return SensorSts;
@@ -280,11 +269,10 @@ bool SHT4x::getTempHumid(void) {
   uint16_t tempRaw = (data[0] << 8) | data[1];
   uint16_t humRaw = (data[3] << 8) | data[4];
   
-  // ★データシート準拠の正しい換算式★
   temp = -45.0 + 175.0 * (double)tempRaw / 65535.0;
-  humidity = -6.0 + 125.0 * (double)humRaw / 65535.0;  // 修正！
+  humidity = -6.0 + 125.0 * (double)humRaw / 65535.0;
   
-  // 湿度範囲制限（データシートに記載されている処理）
+  // 湿度範囲制限
   if (humidity > 100.0) humidity = 100.0;
   if (humidity < 0.0) humidity = 0.0;
   
@@ -367,16 +355,6 @@ unsigned char SHT4x::getPrecisionCommand() {
     case 1: return 0xF6;  // 中精度
     case 2: return 0xE0;  // 低精度
     default: return 0xFD;
-  }
-}
-
-// 精度別待機時間取得（プライベート）
-unsigned char SHT4x::getPrecisionDelay() {
-  switch (_precision) {
-    case 0: return 10;  // 高精度: 8.3ms + マージン
-    case 1: return 5;   // 中精度: 4.5ms + マージン
-    case 2: return 2;   // 低精度: 1.6ms + マージン
-    default: return 10;
   }
 }
 

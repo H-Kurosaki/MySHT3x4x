@@ -61,7 +61,7 @@ void loop() {
     lastTime = currentTime;
     
     // センサー読み取り実行
-    bool result = sensor.autoRead1Sec();
+    bool result = sensor.autoRead();
     
     if (result) {
       // 成功時：データを表示
